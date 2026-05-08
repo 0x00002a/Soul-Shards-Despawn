@@ -1,15 +1,15 @@
 package info.x2a.soulshards.core.network;
 
 
-import dev.architectury.networking.NetworkChannel;
 import info.x2a.soulshards.SoulShards;
 import info.x2a.soulshards.core.network.message.ConfigUpdate;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 
 public class Channels {
-    public static final NetworkChannel CONFIG_UPDATE = NetworkChannel.create(Packets.CONFIG_UPDATE);
 
     public static void init() {
-        CONFIG_UPDATE.register(ConfigUpdate.class, ConfigUpdate::encode, ConfigUpdate::new, ConfigUpdate::apply);
+        PayloadTypeRegistry.configurationC2S().register(ConfigUpdate.TYPE, ConfigUpdate.CODEC);
+        PayloadTypeRegistry.configurationS2C().register(ConfigUpdate.TYPE, ConfigUpdate.CODEC);
         SoulShards.Log.info("Networking initialised");
     }
 }

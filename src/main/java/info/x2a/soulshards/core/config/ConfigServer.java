@@ -6,8 +6,6 @@ import dev.architectury.platform.Platform;
 import info.x2a.soulshards.SoulShards;
 import info.x2a.soulshards.core.data.MultiblockPattern;
 import info.x2a.soulshards.core.util.JsonUtil;
-import me.shedaniel.clothconfig2.api.ConfigBuilder;
-import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.MobCategory;
@@ -144,7 +142,7 @@ public class ConfigServer {
             var output = new HashSet<ResourceLocation>();
             for (var el :
                     disablesVanilla) {
-                output.add(new ResourceLocation("minecraft", el));
+                output.add(ResourceLocation.fromNamespaceAndPath("minecraft", el));
             }
             return output;
         }
@@ -158,7 +156,7 @@ public class ConfigServer {
         public ConfigEntityList(Iterable<String> disabled) {
             this.entities = new HashMap<>();
             for (var entry : disabled) {
-                entities.put(new ResourceLocation(entry), false);
+                entities.put(ResourceLocation.withDefaultNamespace(entry), false);
             }
         }
 
@@ -168,10 +166,10 @@ public class ConfigServer {
 
         public List<String> disabledIds() {
             return this.entities.entrySet()
-                                .stream()
-                                .filter(e -> !e.getValue())
-                                .map(e -> e.getKey().toString())
-                                .toList();
+                    .stream()
+                    .filter(e -> !e.getValue())
+                    .map(e -> e.getKey().toString())
+                    .toList();
         }
 
         public boolean isEnabled(ResourceLocation entityId) {
@@ -181,12 +179,12 @@ public class ConfigServer {
         private static Map<ResourceLocation, Boolean> getDefaults() {
             Map<ResourceLocation, Boolean> defaults = Maps.newHashMap();
             BuiltInRegistries.ENTITY_TYPE.stream().filter(e -> e.getCategory() == MobCategory.MISC)
-                                         .forEach(e -> {
-                                             var entityId = BuiltInRegistries.ENTITY_TYPE.getKey(e);
-                                             if (DEFAULT_DISABLES.contains(entityId)) {
-                                                 defaults.put(entityId, false);
-                                             }
-                                         });
+                    .forEach(e -> {
+                        var entityId = BuiltInRegistries.ENTITY_TYPE.getKey(e);
+                        if (DEFAULT_DISABLES.contains(entityId)) {
+                            defaults.put(entityId, false);
+                        }
+                    });
             return defaults;
         }
     }

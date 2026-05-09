@@ -1,14 +1,11 @@
 package info.x2a.soulshards.core.registry;
 
 import com.google.gson.reflect.TypeToken;
-import dev.architectury.registry.CreativeTabRegistry;
-import dev.architectury.registry.registries.DeferredRegister;
-import dev.architectury.registry.registries.RegistrySupplier;
 import info.x2a.soulshards.SoulShards;
 import info.x2a.soulshards.api.IShardTier;
+import info.x2a.soulshards.block.BlockCursedFire;
 import info.x2a.soulshards.block.BlockHallowedFire;
 import info.x2a.soulshards.block.BlockSoulCage;
-import info.x2a.soulshards.block.BlockCursedFire;
 import info.x2a.soulshards.block.TileEntitySoulCage;
 import info.x2a.soulshards.core.data.Binding;
 import info.x2a.soulshards.core.data.Tier;
@@ -18,44 +15,47 @@ import info.x2a.soulshards.core.util.GsonRecipeSerializer;
 import info.x2a.soulshards.item.ItemQuartzAndSteel;
 import info.x2a.soulshards.item.ItemSoulShard;
 import info.x2a.soulshards.item.ItemVileSword;
-import net.minecraft.core.registries.Registries;
+import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
+import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.*;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 public class RegistrarSoulShards {
 
-    public static RegistrySupplier<BlockSoulCage> SOUL_CAGE;
-    public static RegistrySupplier<BlockCursedFire> CURSED_FIRE;
-    public static RegistrySupplier<BlockHallowedFire> HALLOWED_FIRE;
+    public static BlockSoulCage SOUL_CAGE;
+    public static BlockCursedFire CURSED_FIRE;
+    public static BlockHallowedFire HALLOWED_FIRE;
 
-    public static RegistrySupplier<BlockEntityType<TileEntitySoulCage>> SOUL_CAGE_TE;
+    public static BlockEntityType<TileEntitySoulCage> SOUL_CAGE_TE;
 
-    public static RegistrySupplier<ItemSoulShard> SOUL_SHARD;
-    public static RegistrySupplier<ItemQuartzAndSteel> QUARTZ_AND_STEEL;
-    //public static final RegistrySupplier<Item> VILE_SWORD; = new ItemVileSword();
+    public static ItemSoulShard SOUL_SHARD;
+    public static ItemQuartzAndSteel QUARTZ_AND_STEEL;
+    //public static final Item VILE_SWORD; = new ItemVileSword();
 
-    public static RegistrySupplier<Item> CORRUPTED_INGOT;
-    public static RegistrySupplier<Item> CORRUPTED_ESSENCE;
-    public static RegistrySupplier<Enchantment> SOUL_STEALER;
-    public static List<RegistrySupplier<? extends Item>> CREATIVE_TAB_ITEMS = new ArrayList<>();
-    public static RegistrySupplier<CreativeModeTab> SOUL_SHARDS_TAB;
+    public static Item CORRUPTED_INGOT;
+    public static Item CORRUPTED_ESSENCE;
+    public static Enchantment SOUL_STEALER;
+    public static List<? extends Item> CREATIVE_TAB_ITEMS = new ArrayList<>();
+    public static CreativeModeTab SOUL_SHARDS_TAB;
 
     public static void init() {
-
-        SOUL_SHARDS_TAB = SoulRegistries.CREATIVE_TABS.register(SoulShards.MODID,
-                () -> CreativeTabRegistry.create(Component.literal("Soul Shards"),
-                        () -> new ItemStack(SOUL_SHARD.get()))
-        );
+        var create_mode_tab = ResourceKey.create(BuiltInRegistries.CREATIVE_MODE_TAB.key(), SoulShards.makeResource("item_group"));
+        SOUL_SHARDS_TAB = Registry.register(SoulRegistries.CREATIVE_TABS, create_mode_tab, FabricItemGroup.builder().icon(() -> new ItemStack(SOUL_SHARD)).title(Component.literal("Soul Shards")).build());
 
 
         registerRecipes();
@@ -63,63 +63,58 @@ public class RegistrarSoulShards {
         registerItems();
         registerEnchantments();
 
-        for (IShardTier tier : Tier.INDEXED) {
-            if (tier.getKillRequirement() == 0) {
-                continue;
-            }
-            CreativeTabRegistry.appendStack(SOUL_SHARDS_TAB, () -> {
-                var shard = SOUL_SHARD.get();
+        ItemGroupEvents.modifyEntriesEvent(create_mode_tab).register(itemGroup -> {
+            for (IShardTier tier : Tier.INDEXED) {
+                if (tier.getKillRequirement() == 0) {
+                    continue;
+                }
+                var shard = SOUL_SHARD;
                 ItemStack stack = new ItemStack(shard);
                 Binding binding = new Binding(null, tier.getKillRequirement());
                 shard.updateBinding(stack, binding);
-                return stack;
-            });
-        }
-
-        SoulRegistries.CREATIVE_TABS.register();
+                itemGroup.accept(shard);
+            }
+        });
     }
 
-    public static <T extends Item> RegistrySupplier<T> registerAndAddCreative(DeferredRegister<Item> reg,
-                                                                              ResourceLocation id,
-                                                                              Supplier<T> prov) {
-        var supplier = reg.register(id, prov);
-        CreativeTabRegistry.append(SOUL_SHARDS_TAB, supplier);
-        return supplier;
+    public static <T extends Item> T registerAndAddCreative(Registry<Item> reg,
+                                                            ResourceLocation id,
+                                                            Supplier<T> prov) {
+        return Registry.register(reg, id, prov.get());
+        //var supplier = reg.register(id, prov);
+        //CreativeTabRegistry.append(SOUL_SHARDS_TAB, supplier);
+
     }
 
-    public static RegistrySupplier<RecipeType<CursingRecipe>> CURSING_RECIPE;
-    public static RegistrySupplier<RecipeSerializer<CursingRecipe>> CURSING_RECIPE_SERIALIZER;
+    public static RecipeType<CursingRecipe> CURSING_RECIPE;
+    public static RecipeSerializer<CursingRecipe> CURSING_RECIPE_SERIALIZER;
 
     public static void registerBlocks() {
-        CURSED_FIRE = SoulRegistries.BLOCKS.register(SoulShards.makeResource("cursed_fire"), BlockCursedFire::new);
-        HALLOWED_FIRE = SoulRegistries.BLOCKS.register(SoulShards.makeResource("hallowed_fire"), BlockHallowedFire::new);
-        SOUL_CAGE = SoulRegistries.BLOCKS.register(new ResourceLocation(SoulShards.MODID, "soul_cage"), BlockSoulCage::new);
-        SOUL_CAGE_TE = SoulRegistries.BLOCK_ENTITIES.register(new ResourceLocation(SoulShards.MODID, "soul_cage"),
-                () -> BlockEntityType.Builder.of(TileEntitySoulCage::new, SOUL_CAGE.get())
+        CURSED_FIRE = Registry.register(SoulRegistries.BLOCKS, SoulShards.makeResource("cursed_fire"), new BlockCursedFire());
+        HALLOWED_FIRE = Registry.register(SoulRegistries.BLOCKS, SoulShards.makeResource("hallowed_fire"), new BlockHallowedFire());
+        SOUL_CAGE = Registry.register(SoulRegistries.BLOCKS, SoulShards.makeResource("soul_cage"), new BlockSoulCage());
+        SOUL_CAGE_TE = Registry.register(SoulRegistries.BLOCK_ENTITIES, SoulShards.makeResource("soul_cage"),
+                BlockEntityType.Builder.of(TileEntitySoulCage::new, SOUL_CAGE)
                         .build(null));
-        SoulRegistries.BLOCKS.register();
-        SoulRegistries.BLOCK_ENTITIES.register();
     }
 
-    private static <T extends Item> RegistrySupplier<T> regItem(String id, Supplier<T> source) {
-        return registerAndAddCreative(SoulRegistries.ITEMS, new ResourceLocation(SoulShards.MODID, id), source);
+    private static <T extends Item> T regItem(String id, Supplier<T> source) {
+        return registerAndAddCreative(SoulRegistries.ITEMS, SoulShards.makeResource(id), source);
     }
 
     public static void registerRecipes() {
-        CURSING_RECIPE = SoulRegistries.RECIPES.register(CursingRecipe.ID, () -> new RecipeType<>() {
+        CURSING_RECIPE = Registry.register(SoulRegistries.RECIPES, CursingRecipe.ID, new RecipeType<>() {
             @Override
             public String toString() {
                 return "cursing";
             }
         });
-        CURSING_RECIPE_SERIALIZER = SoulRegistries.RECIPE_SERIALIZERS.register(CursingRecipe.ID, () -> new GsonRecipeSerializer<>(TypeToken.get(CursingRecipe.class)));
-        SoulRegistries.RECIPES.register();
-        SoulRegistries.RECIPE_SERIALIZERS.register();
+        CURSING_RECIPE_SERIALIZER = Registry.register(SoulRegistries.RECIPE_SERIALIZERS, CursingRecipe.ID, new GsonRecipeSerializer<>(TypeToken.get(CursingRecipe.class)));
         SoulShards.Log.info("Recipes registered");
     }
 
     public static void registerItems() {
-        regItem("soul_cage", () -> new BlockItem(SOUL_CAGE.get(), new Item.Properties()));
+        regItem("soul_cage", () -> new BlockItem(SOUL_CAGE, new Item.Properties()));
         regItem("vile_dust", () -> new Item(new Item.Properties()));
         regItem("vile_sword", ItemVileSword::new);
         regItem("corrupted_essence", () -> new Item(new Item.Properties()));
@@ -132,8 +127,7 @@ public class RegistrarSoulShards {
     }
 
     public static void registerEnchantments() {
-        SOUL_STEALER = SoulRegistries.ENCHANTMENTS.register(new ResourceLocation(SoulShards.MODID, "soul_stealer"),
-                EnchantmentSoulStealer::new);
-        SoulRegistries.ENCHANTMENTS.register();
+        SOUL_STEALER = Registry.register(SoulRegistries.ENCHANTMENTS, SoulShards.makeResource("soul_stealer"),
+                new EnchantmentSoulStealer());
     }
 }

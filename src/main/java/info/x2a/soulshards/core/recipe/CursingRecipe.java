@@ -3,9 +3,7 @@ package info.x2a.soulshards.core.recipe;
 import com.google.gson.*;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
-import com.google.gson.reflect.TypeToken;
 import info.x2a.soulshards.SoulShards;
-import info.x2a.soulshards.core.util.GsonRecipeSerializer;
 import info.x2a.soulshards.core.registry.RegistrarSoulShards;
 import info.x2a.soulshards.core.util.JsonUtil;
 import info.x2a.soulshards.core.util.RecipeSerde;
@@ -96,7 +94,7 @@ public class CursingRecipe implements RecipeSerde<Container> {
 
     @Override
     public RecipeType<?> getType() {
-        return RegistrarSoulShards.CURSING_RECIPE.get();
+        return RegistrarSoulShards.CURSING_RECIPE;
     }
 
     @Override

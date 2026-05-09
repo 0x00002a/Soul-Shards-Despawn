@@ -11,16 +11,18 @@ import info.x2a.soulshards.core.registry.RegistrarSoulShards;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.registration.IModIngredientRegistration;
-import mezz.jei.api.registration.IRecipeCatalystRegistration;
-import mezz.jei.api.registration.IRecipeCategoryRegistration;
-import mezz.jei.api.registration.IRecipeRegistration;
+import mezz.jei.api.ingredients.subtypes.ISubtypeInterpreter;
+import mezz.jei.api.ingredients.subtypes.UidContext;
+import mezz.jei.api.registration.*;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec2;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +35,35 @@ public class SoulShardsJei implements IModPlugin {
     @Override
     public @NotNull ResourceLocation getPluginUid() {
         return SoulShards.makeResource("jei_plugin");
+    }
+
+    @Override
+    public void registerItemSubtypes(ISubtypeRegistration registration) {
+        registration.registerSubtypeInterpreter(RegistrarSoulShards.SOUL_SHARD, new ISubtypeInterpreter<>() {
+            static class ComparesToNothing {
+                @Override
+                public boolean equals(Object other) {
+                    return other.getClass() == this.getClass();
+                }
+            }
+
+            static final ComparesToNothing NOTHING = new ComparesToNothing();
+
+            @Override
+            public @Nullable Object getSubtypeData(ItemStack ingredient, UidContext context) {
+                var tag = ingredient.get(DataComponents.CUSTOM_DATA);
+                if (tag != null) {
+                    return tag.copyTag().get("binding");
+                } else {
+                    return NOTHING;
+                }
+            }
+
+            @Override
+            public @NotNull String getLegacyStringSubtypeInfo(ItemStack ingredient, UidContext context) {
+                return "";
+            }
+        });
     }
 
     @Override

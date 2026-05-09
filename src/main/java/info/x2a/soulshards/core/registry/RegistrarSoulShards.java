@@ -58,9 +58,6 @@ public class RegistrarSoulShards {
                 FabricItemGroup.builder().icon(() -> new ItemStack(SOUL_SHARD)).title(Component.literal("Soul Shards")).displayItems(
                                 (params, output) -> {
                                     for (IShardTier tier : Tier.INDEXED) {
-                                        if (tier.getKillRequirement() == 0) {
-                                            continue;
-                                        }
                                         var shard = SOUL_SHARD;
                                         var stack = new ItemStack(shard);
                                         var binding = new Binding(null, tier.getKillRequirement());

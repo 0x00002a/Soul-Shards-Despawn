@@ -178,7 +178,7 @@ public class MultiblockPattern {
             } else {
                 resource = element.getAsString();
             }
-            return BuiltInRegistries.BLOCK.get(ResourceLocation.withDefaultNamespace(resource));
+            return BuiltInRegistries.BLOCK.get(ResourceLocation.parse(resource));
         }
 
         @Override

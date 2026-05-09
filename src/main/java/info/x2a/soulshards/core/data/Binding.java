@@ -89,7 +89,7 @@ public class Binding implements IBinding, INBTSerializable<CompoundTag> {
     @Override
     public void deserializeNBT(CompoundTag nbt) {
         if (nbt.contains("bound"))
-            this.boundEntity = ResourceLocation.withDefaultNamespace(nbt.getString("bound"));
+            this.boundEntity = ResourceLocation.parse(nbt.getString("bound"));
         if (nbt.contains("owner"))
             this.owner = UUID.fromString(nbt.getString("owner"));
         this.kills = nbt.getInt("kills");

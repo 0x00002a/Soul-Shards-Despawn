@@ -155,7 +155,7 @@ public class ConfigServer {
         public ConfigEntityList(Iterable<String> disabled) {
             this.entities = new HashMap<>();
             for (var entry : disabled) {
-                entities.put(ResourceLocation.withDefaultNamespace(entry), false);
+                entities.put(ResourceLocation.parse(entry), false);
             }
         }
 

@@ -11,7 +11,9 @@ import info.x2a.soulshards.core.registry.RegistrarSoulShards;
 import info.x2a.soulshards.item.ItemSoulShard;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionResult;
@@ -108,8 +110,8 @@ public class EventHandler {
                 binding = getNewBinding(killed);
 
             var mainHand = player.getMainHandItem();
-            int soulsGained = 1; /*TODO:reimplement enchantment 1 + EnchantmentHelper.getItemEnchantmentLevel(RegistrarSoulShards.SOUL_STEALER,
-                    mainHand);*/
+            var enchantment = player.level().registryAccess().registry(Registries.ENCHANTMENT).get().getHolder(SoulShards.makeResource("soul_stealer")).get();
+            int soulsGained = 1 + mainHand.get(DataComponents.ENCHANTMENTS).getLevel(enchantment);
             if (mainHand.getItem() instanceof ISoulWeapon)
                 soulsGained += ((ISoulWeapon) mainHand.getItem()).getSoulBonus(mainHand, player, killed);
 

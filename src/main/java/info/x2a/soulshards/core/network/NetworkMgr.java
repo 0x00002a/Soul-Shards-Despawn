@@ -4,11 +4,18 @@ import info.x2a.soulshards.SoulShards;
 import info.x2a.soulshards.core.config.ConfigServer;
 import info.x2a.soulshards.core.network.message.ConfigUpdate;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 
 public class NetworkMgr {
     public static void sendConfig(ConfigServer config) {
         ClientPlayNetworking.send(new ConfigUpdate(config));
+    }
+
+    public static void init() {
+        PayloadTypeRegistry.playC2S().register(ConfigUpdate.TYPE, ConfigUpdate.CODEC);
+        PayloadTypeRegistry.playS2C().register(ConfigUpdate.TYPE, ConfigUpdate.CODEC);
+        SoulShards.Log.info("Networking initialised");
     }
 
     public static void initClient() {

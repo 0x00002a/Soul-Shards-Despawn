@@ -5,7 +5,6 @@ import info.x2a.soulshards.core.EventHandler;
 import info.x2a.soulshards.core.config.ConfigClient;
 import info.x2a.soulshards.core.config.ConfigServer;
 import info.x2a.soulshards.core.data.Tier;
-import info.x2a.soulshards.core.network.Channels;
 import info.x2a.soulshards.core.network.NetworkMgr;
 import info.x2a.soulshards.core.network.message.ConfigUpdate;
 import info.x2a.soulshards.core.registry.RegistrarSoulShards;
@@ -72,7 +71,7 @@ public class SoulShards implements ModInitializer {
     }
 
     public static void initNetwork() {
-        Channels.init();
+        NetworkMgr.init();
     }
 
     public static MutableComponent translate(String fmt, Object... args) {
@@ -117,6 +116,7 @@ public class SoulShards implements ModInitializer {
     }
 
     static void initClient() {
+        SoulShards.initCommon();
         SoulShards.afterLoad();
         if (SoulShards.IS_CLOTH_CONFIG_LOADED) {
             /*ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, env) -> {

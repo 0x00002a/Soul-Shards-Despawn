@@ -16,9 +16,6 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.contents.TranslatableContents;
-import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializers;
-import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.GameRules;
@@ -40,7 +37,6 @@ public class SoulShards {
             new ConfigClient(), TypeToken.get(ConfigClient.class));
     public static ConfigServer CONFIG_SERVER;
     public static ConfigClient CONFIG_CLIENT;
-    public static EntityDataAccessor<Boolean> cageBornTag = SynchedEntityData.defineId(LivingEntity.class, EntityDataSerializers.BOOLEAN);
     public static GameRules.Key<GameRules.BooleanValue> allowCageSpawns;
     public static boolean IS_CLOTH_CONFIG_LOADED;
     public static final String BOSS_TAG = "c:bosses";

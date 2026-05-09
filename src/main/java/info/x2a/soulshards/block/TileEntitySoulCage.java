@@ -4,6 +4,7 @@ import info.x2a.soulshards.SoulShards;
 import info.x2a.soulshards.api.CageSpawnEvent;
 import info.x2a.soulshards.api.IShardTier;
 import info.x2a.soulshards.api.ISoulShard;
+import info.x2a.soulshards.core.SoulShardsAttachments;
 import info.x2a.soulshards.core.data.Binding;
 import info.x2a.soulshards.core.registry.RegistrarSoulShards;
 import info.x2a.soulshards.item.ItemSoulShard;
@@ -164,7 +165,7 @@ public class TileEntitySoulCage extends BlockEntity {
                     continue;
 
                 spawned.moveTo(spawnAt, level.random.nextFloat() * 360F, 0F);
-                spawned.getEntityData().set(SoulShards.cageBornTag, true);
+                spawned.setAttached(SoulShardsAttachments.CAGE_BORN, true);
 
                 if (spawned.isAlive() && !hasReachedSpawnCap(spawned) && level.noCollision(spawned)) {
                     if (!SoulShards.CONFIG_SERVER.getBalance().allowBossSpawns() && SoulShards.isBoss(spawned))
@@ -214,7 +215,7 @@ public class TileEntitySoulCage extends BlockEntity {
                 pos.getY() + 16, pos.getZ() + 16);
 
         int mobCount = getLevel().getEntitiesOfClass(living.getClass(), box,
-                e -> e != null && e.getEntityData().get(SoulShards.cageBornTag)).size();
+                e -> e != null && e.getAttachedOrElse(SoulShardsAttachments.CAGE_BORN, false)).size();
         return mobCount >= SoulShards.CONFIG_SERVER.getBalance().getSpawnCap();
     }
 

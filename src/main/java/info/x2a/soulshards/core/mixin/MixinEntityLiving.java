@@ -1,7 +1,6 @@
 package info.x2a.soulshards.core.mixin;
 
 import info.x2a.soulshards.core.EventHandler;
-import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -17,15 +16,6 @@ public class MixinEntityLiving {
 
     @Shadow
     protected boolean dead;
-
-    @Inject(method = "defineSynchedData(Lnet/minecraft/network/syncher/SynchedEntityData$Builder;)V", at = @At("TAIL"))
-    private void soulshards$defineSynchedData(SynchedEntityData.Builder builder, CallbackInfo ci) {
-        var self = (LivingEntity) (Object) this;
-        if (self instanceof Player) {
-            return;
-        }
-        //builder.define(SoulShards.cageBornTag, false);
-    }
 
     @Inject(method = "die", at = @At("HEAD"))
     private void onDeathEvent(DamageSource damageSource, CallbackInfo callbackInfo) {

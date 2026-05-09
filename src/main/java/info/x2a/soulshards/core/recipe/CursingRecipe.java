@@ -65,7 +65,7 @@ public record CursingRecipe(Item input, Item result, int quantity) implements Re
     }
 
     @Override
-    public ItemStack assemble(RecipeInput recipeInput, HolderLookup.Provider provider) {
+    public @NotNull ItemStack assemble(RecipeInput recipeInput, HolderLookup.Provider provider) {
         return ItemStack.EMPTY;
     }
 
@@ -75,7 +75,7 @@ public record CursingRecipe(Item input, Item result, int quantity) implements Re
     }
 
     @Override
-    public ItemStack getResultItem(HolderLookup.Provider provider) {
+    public @NotNull ItemStack getResultItem(HolderLookup.Provider provider) {
         return getResult();
     }
 
@@ -91,12 +91,12 @@ public record CursingRecipe(Item input, Item result, int quantity) implements Re
     }
 
     @Override
-    public RecipeSerializer<?> getSerializer() {
+    public @NotNull RecipeSerializer<?> getSerializer() {
         return RegistrarSoulShards.CURSING_RECIPE_SERIALIZER;
     }
 
     @Override
-    public RecipeType<?> getType() {
+    public @NotNull RecipeType<?> getType() {
         return RegistrarSoulShards.CURSING_RECIPE;
     }
 

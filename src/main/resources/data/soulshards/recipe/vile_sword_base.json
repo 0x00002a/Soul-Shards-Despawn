@@ -1,6 +1,6 @@
 {
   "result": {
-    "item": "soulshards:vile_sword_base"
+    "id": "soulshards:vile_sword_base"
   },
   "type": "minecraft:crafting_shaped",
   "pattern": [

@@ -1,5 +1,6 @@
 package info.x2a.soulshards.core.registry;
 
+import com.mojang.serialization.MapCodec;
 import info.x2a.soulshards.SoulShards;
 import info.x2a.soulshards.api.IShardTier;
 import info.x2a.soulshards.block.BlockCursedFire;
@@ -16,7 +17,9 @@ import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
@@ -27,9 +30,8 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Supplier;
 
 public class RegistrarSoulShards {
@@ -42,12 +44,9 @@ public class RegistrarSoulShards {
 
     public static ItemSoulShard SOUL_SHARD;
     public static ItemQuartzAndSteel QUARTZ_AND_STEEL;
-    //public static final Item VILE_SWORD; = new ItemVileSword();
 
     public static Item CORRUPTED_INGOT;
-    public static Item CORRUPTED_ESSENCE;
     public static Enchantment SOUL_STEALER;
-    public static List<? extends Item> CREATIVE_TAB_ITEMS = new ArrayList<>();
     public static CreativeModeTab SOUL_SHARDS_TAB;
     public static ResourceKey<CreativeModeTab> SOUL_SHARDS_TAB_KEY;
 
@@ -112,7 +111,18 @@ public class RegistrarSoulShards {
                 return "cursing";
             }
         });
-        //CURSING_RECIPE_SERIALIZER = Registry.register(SoulRegistries.RECIPE_SERIALIZERS, CursingRecipe.ID, new GsonRecipeSerializer<>(TypeToken.get(CursingRecipe.class)));
+        CURSING_RECIPE_SERIALIZER = Registry.register(SoulRegistries.RECIPE_SERIALIZERS, CursingRecipe.ID, new RecipeSerializer<CursingRecipe>() {
+
+            @Override
+            public @NotNull MapCodec<CursingRecipe> codec() {
+                return CursingRecipe.CODEC;
+            }
+
+            @Override
+            public @NotNull StreamCodec<RegistryFriendlyByteBuf, CursingRecipe> streamCodec() {
+                return CursingRecipe.STREAM_CODEC;
+            }
+        });
         SoulShards.Log.info("Recipes registered");
     }
 

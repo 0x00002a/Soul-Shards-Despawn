@@ -2,6 +2,7 @@ package info.x2a.soulshards;
 
 import com.google.gson.reflect.TypeToken;
 import info.x2a.soulshards.core.EventHandler;
+import info.x2a.soulshards.core.SoulShardsAttachments;
 import info.x2a.soulshards.core.config.ConfigClient;
 import info.x2a.soulshards.core.config.ConfigServer;
 import info.x2a.soulshards.core.data.Tier;
@@ -90,6 +91,7 @@ public class SoulShards {
         allowCageSpawns = GameRuleRegistry.register("allowCageSpawns", GameRules.Category.SPAWNING,
                 GameRuleFactory.createBooleanRule(true));
         RegistrarSoulShards.init();
+        SoulShardsAttachments.init();
         EventHandler.init();
         initNetwork();
     }

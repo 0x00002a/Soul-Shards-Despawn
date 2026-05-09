@@ -93,15 +93,4 @@ public class SoulShards {
         EventHandler.init();
         initNetwork();
     }
-
-    static {
-        // Force LivingEntity to fully class-init (and thus run all its own defineId calls)
-        // before we allocate our own id. Otherwise we may get an id that vanilla then re-uses.
-        try {
-            Class.forName("net.minecraft.world.entity.LivingEntity");
-            Class.forName("net.minecraft.world.entity.player.Player");
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-    }
 }

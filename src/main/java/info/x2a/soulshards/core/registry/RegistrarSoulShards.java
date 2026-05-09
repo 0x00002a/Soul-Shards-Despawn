@@ -49,10 +49,28 @@ public class RegistrarSoulShards {
     public static Enchantment SOUL_STEALER;
     public static List<? extends Item> CREATIVE_TAB_ITEMS = new ArrayList<>();
     public static CreativeModeTab SOUL_SHARDS_TAB;
+    public static ResourceKey<CreativeModeTab> SOUL_SHARDS_TAB_KEY;
 
     public static void init() {
         var create_mode_tab = ResourceKey.create(BuiltInRegistries.CREATIVE_MODE_TAB.key(), SoulShards.makeResource("item_group"));
-        SOUL_SHARDS_TAB = Registry.register(SoulRegistries.CREATIVE_TABS, create_mode_tab, FabricItemGroup.builder().icon(() -> new ItemStack(SOUL_SHARD)).title(Component.literal("Soul Shards")).build());
+        SOUL_SHARDS_TAB_KEY = create_mode_tab;
+        SOUL_SHARDS_TAB =
+                FabricItemGroup.builder().icon(() -> new ItemStack(SOUL_SHARD)).title(Component.literal("Soul Shards")).displayItems(
+                                (params, output) -> {
+                                    for (IShardTier tier : Tier.INDEXED) {
+                                        if (tier.getKillRequirement() == 0) {
+                                            continue;
+                                        }
+                                        var shard = SOUL_SHARD;
+                                        var stack = new ItemStack(shard);
+                                        var binding = new Binding(null, tier.getKillRequirement());
+                                        shard.updateBinding(stack, binding);
+                                        output.accept(stack);
+                                    }
+                                }
+                        )
+                        .build();
+        Registry.register(SoulRegistries.CREATIVE_TABS, create_mode_tab, SOUL_SHARDS_TAB);
 
 
         registerRecipes();
@@ -60,26 +78,16 @@ public class RegistrarSoulShards {
         registerItems();
         registerEnchantments();
 
-        ItemGroupEvents.modifyEntriesEvent(create_mode_tab).register(itemGroup -> {
-            for (IShardTier tier : Tier.INDEXED) {
-                if (tier.getKillRequirement() == 0) {
-                    continue;
-                }
-                var shard = SOUL_SHARD;
-                ItemStack stack = new ItemStack(shard);
-                Binding binding = new Binding(null, tier.getKillRequirement());
-                shard.updateBinding(stack, binding);
-                itemGroup.accept(shard);
-            }
-        });
     }
 
     public static <T extends Item> T registerAndAddCreative(Registry<Item> reg,
                                                             ResourceLocation id,
-                                                            Supplier<T> prov) {
-        return Registry.register(reg, id, prov.get());
+                                                            T item) {
         //var supplier = reg.register(id, prov);
-        //CreativeTabRegistry.append(SOUL_SHARDS_TAB, supplier);
+        ItemGroupEvents.modifyEntriesEvent(SOUL_SHARDS_TAB_KEY).register(itemGroup -> {
+            itemGroup.accept(item);
+        });
+        return Registry.register(reg, id, item);
 
     }
 
@@ -96,8 +104,9 @@ public class RegistrarSoulShards {
     }
 
     private static <T extends Item> T regItem(String id, Supplier<T> source) {
-        return registerAndAddCreative(SoulRegistries.ITEMS, SoulShards.makeResource(id), source);
+        return registerAndAddCreative(SoulRegistries.ITEMS, SoulShards.makeResource(id), source.get());
     }
+
 
     public static void registerRecipes() {
         CURSING_RECIPE = Registry.register(SoulRegistries.RECIPES, CursingRecipe.ID, new RecipeType<>() {
@@ -115,7 +124,7 @@ public class RegistrarSoulShards {
         regItem("vile_dust", () -> new Item(new Item.Properties()));
         regItem("vile_sword", ItemVileSword::new);
         regItem("corrupted_essence", () -> new Item(new Item.Properties()));
-        SOUL_SHARD = regItem("soul_shard", ItemSoulShard::new);
+        SOUL_SHARD = regItem("soul_shard", () -> new ItemSoulShard());
         CORRUPTED_INGOT = regItem("corrupted_ingot",
                 () -> new Item(new Item.Properties()));
         regItem("vile_sword_base", () -> new Item(new Item.Properties().stacksTo(1)));

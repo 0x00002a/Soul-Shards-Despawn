@@ -1,7 +1,5 @@
 package info.x2a.soulshards.core;
 
-import dev.architectury.event.EventResult;
-import dev.architectury.event.events.common.InteractionEvent;
 import info.x2a.soulshards.SoulShards;
 import info.x2a.soulshards.api.BindingEvent;
 import info.x2a.soulshards.api.ISoulWeapon;
@@ -11,23 +9,18 @@ import info.x2a.soulshards.core.data.MultiblockPattern;
 import info.x2a.soulshards.core.data.Tier;
 import info.x2a.soulshards.core.registry.RegistrarSoulShards;
 import info.x2a.soulshards.item.ItemSoulShard;
+import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
-
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ItemCombinerMenu;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.block.state.BlockState;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
 import java.util.function.Consumer;
@@ -35,30 +28,32 @@ import java.util.function.Consumer;
 public class EventHandler {
 
     public static void init() {
-        InteractionEvent.RIGHT_CLICK_BLOCK.register((player, hand, pos, direction) -> {
-            MultiblockPattern pattern = ConfigServer.getMultiblock();
+        UseBlockCallback.EVENT.register(
+                (player, level, hand, bhr) -> {
+                    var pos = bhr.getBlockPos();
+                    MultiblockPattern pattern = ConfigServer.getMultiblock();
 
-            ItemStack held = player.getMainHandItem();
-            if (!ItemStack.isSameItem(pattern.getCatalyst(), held))
-                return EventResult.pass();
+                    ItemStack held = player.getMainHandItem();
+                    if (!ItemStack.isSameItem(pattern.getCatalyst(), held))
+                        return InteractionResult.PASS;
 
-            var world = player.level();
-            BlockState worldState = world.getBlockState(pos);
-            if (!pattern.isOriginBlock(worldState))
-                return EventResult.pass();
+                    var world = player.level();
+                    BlockState worldState = world.getBlockState(pos);
+                    if (!pattern.isOriginBlock(worldState))
+                        return InteractionResult.PASS;
 
-            InteractionResultHolder<Set<BlockPos>> match = pattern.match(world, pos);
-            if (match.getResult() == InteractionResult.FAIL)
-                return EventResult.interruptFalse();
+                    InteractionResultHolder<Set<BlockPos>> match = pattern.match(world, pos);
+                    if (match.getResult() == InteractionResult.FAIL)
+                        return InteractionResult.CONSUME_PARTIAL;
 
-            match.getObject().forEach(matchedPos -> world.destroyBlock(matchedPos, false));
-            held.shrink(1);
-            ItemStack shardStack = new ItemStack(RegistrarSoulShards.SOUL_SHARD.get());
-            if (!player.getInventory().add(shardStack)) {
-                Containers.dropItemStack(world, player.getX(), player.getY(), player.getZ(), shardStack);
-            }
-            return EventResult.interruptTrue();
-        });
+                    match.getObject().forEach(matchedPos -> world.destroyBlock(matchedPos, false));
+                    held.shrink(1);
+                    ItemStack shardStack = new ItemStack(RegistrarSoulShards.SOUL_SHARD);
+                    if (!player.getInventory().add(shardStack)) {
+                        Containers.dropItemStack(world, player.getX(), player.getY(), player.getZ(), shardStack);
+                    }
+                    return InteractionResult.SUCCESS_NO_ITEM_USED;
+                });
     }
 
     public static void onAnvilCraft(ItemStack leftStack, ItemStack rightStack, Consumer<ItemStack> craftResult, Consumer<Integer> cost) {
@@ -73,7 +68,7 @@ public class EventHandler {
                 return;
 
             if (left.getBoundEntity() != null && left.getBoundEntity().equals(right.getBoundEntity())) {
-                ItemStack output = new ItemStack(RegistrarSoulShards.SOUL_SHARD.get());
+                ItemStack output = new ItemStack(RegistrarSoulShards.SOUL_SHARD);
                 ((ItemSoulShard) output.getItem()).updateBinding(output, left.addKills(right.getKills()));
                 cost.accept(left.getTier().getIndex() * 6);
                 craftResult.accept(output);
@@ -83,7 +78,7 @@ public class EventHandler {
 
     public static boolean shouldDropXp(LivingEntity entity) {
         return !entity.getEntityData()
-                      .get(SoulShards.cageBornTag) || SoulShards.CONFIG_SERVER.getBalance().dropExperience;
+                .get(SoulShards.cageBornTag) || SoulShards.CONFIG_SERVER.getBalance().dropExperience;
     }
 
     public static void onEntityDeath(LivingEntity killed, DamageSource source) {
@@ -94,7 +89,7 @@ public class EventHandler {
             return;
 
         if (!SoulShards.CONFIG_SERVER.getBalance().countCageBornForShard() && killed.getEntityData()
-                                                                                    .get(SoulShards.cageBornTag))
+                .get(SoulShards.cageBornTag))
             return;
 
         if (source.getEntity() instanceof Player player) {
@@ -114,8 +109,8 @@ public class EventHandler {
                 binding = getNewBinding(killed);
 
             var mainHand = player.getMainHandItem();
-            int soulsGained = 1 + EnchantmentHelper.getItemEnchantmentLevel(RegistrarSoulShards.SOUL_STEALER.get(),
-                    mainHand);
+            int soulsGained = 1; /*TODO:reimplement enchantment 1 + EnchantmentHelper.getItemEnchantmentLevel(RegistrarSoulShards.SOUL_STEALER,
+                    mainHand);*/
             if (mainHand.getItem() instanceof ISoulWeapon)
                 soulsGained += ((ISoulWeapon) mainHand.getItem()).getSoulBonus(mainHand, player, killed);
 

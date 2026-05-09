@@ -1,7 +1,6 @@
 package info.x2a.soulshards.compat.jei.categories;
 
 import com.mojang.blaze3d.platform.Lighting;
-import com.mojang.blaze3d.vertex.PoseStack;
 import info.x2a.soulshards.SoulShards;
 import info.x2a.soulshards.core.data.MultiblockPattern;
 import info.x2a.soulshards.core.registry.RegistrarSoulShards;
@@ -26,10 +25,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Quaternionf;
-import org.joml.Vector3f;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class ShardCreationCategory implements IRecipeCategory<ShardCreationCategory.MultiblockWrapper> {
     private static final ResourceLocation CAT_ID = SoulShards.makeResource("multiblock_crafting");
@@ -49,8 +46,8 @@ public class ShardCreationCategory implements IRecipeCategory<ShardCreationCateg
     public ShardCreationCategory(IGuiHelper gui) {
         this.background = gui.createDrawable(SoulShards.makeResource("gui/soulshardcrafting.png"), 0, 0, WIDTH, HEIGHT);
 
-        this.icon = gui.createDrawableIngredient(VanillaTypes.ITEM_STACK, RegistrarSoulShards.SOUL_SHARD.get()
-                                                                                                        .getDefaultInstance());
+        this.icon = gui.createDrawableIngredient(VanillaTypes.ITEM_STACK, RegistrarSoulShards.SOUL_SHARD
+                .getDefaultInstance());
     }
 
     @Override
@@ -85,21 +82,21 @@ public class ShardCreationCategory implements IRecipeCategory<ShardCreationCateg
             }
         }
         builder.addInvisibleIngredients(RecipeIngredientRole.CATALYST)
-               .addIngredients(Ingredient.of(blockItems.stream()));
+                .addIngredients(Ingredient.of(blockItems.stream()));
         var HEIGHT_OFFSET = 19;
         builder.addSlot(RecipeIngredientRole.INPUT, 2, HEIGHT_OFFSET)
-               .addIngredients(Ingredient.of(recipe.pattern.getCatalyst()));
+                .addIngredients(Ingredient.of(recipe.pattern.getCatalyst()));
         builder.addSlot(RecipeIngredientRole.OUTPUT, WIDTH - 20, HEIGHT_OFFSET)
-               .addIngredient(VanillaTypes.ITEM_STACK, RegistrarSoulShards.SOUL_SHARD.get().getDefaultInstance());
+                .addIngredient(VanillaTypes.ITEM_STACK, RegistrarSoulShards.SOUL_SHARD.getDefaultInstance());
     }
 
     @Override
     public void getTooltip(ITooltipBuilder comps, MultiblockWrapper recipe, IRecipeSlotsView slots, double mouseX, double mouseY) {
         comps.add(Component.translatable("desc.soulshards.soulshard_crafting").withStyle(ChatFormatting.DARK_AQUA));
         comps.add(Component.translatable("misc.soulshards.catalyst")
-                           .append(": ")
-                           .append(recipe.pattern.getCatalyst().getHoverName())
-                           .withStyle(ChatFormatting.AQUA));
+                .append(": ")
+                .append(recipe.pattern.getCatalyst().getHoverName())
+                .withStyle(ChatFormatting.AQUA));
         if (mouseX > CRAFTING_X && mouseX < WIDTH - CRAFTING_X && mouseY > CRAFTING_Y && mouseY < HEIGHT - CRAFTING_Y) {
             for (var slot : recipe.pattern.getSlots()) {
                 var states = slot.getStates();
@@ -108,8 +105,8 @@ public class ShardCreationCategory implements IRecipeCategory<ShardCreationCateg
                     comps.add(Component.translatable("jei.soulshards.oneof"));
                     for (var state : slot.getStates()) {
                         comps.add(Component.literal(" ").append(state.getBlock()
-                                                                     .getName()
-                                                                     .withStyle(state == currState ? ChatFormatting.WHITE : ChatFormatting.DARK_GRAY)));
+                                .getName()
+                                .withStyle(state == currState ? ChatFormatting.WHITE : ChatFormatting.DARK_GRAY)));
                     }
                 } else {
                     comps.add(currState.getBlock().getName());
@@ -117,8 +114,8 @@ public class ShardCreationCategory implements IRecipeCategory<ShardCreationCateg
             }
         }
         comps.add(Component.translatable("jei.soulshards.consumes_warning")
-                           .withStyle(ChatFormatting.RED)
-                           .withStyle(ChatFormatting.BOLD));
+                .withStyle(ChatFormatting.RED)
+                .withStyle(ChatFormatting.BOLD));
     }
 
     @Override
@@ -151,7 +148,7 @@ public class ShardCreationCategory implements IRecipeCategory<ShardCreationCateg
                 poses.mulPose(new Quaternionf().rotationX((float) (Math.PI / 2F)));
                 poses.translate(x, 0, y);
                 var states = recipe.pattern.getSlot(x, y)
-                                           .getStates();
+                        .getStates();
                 brender.renderSingleBlock(states
                         .get((int) (drawTick % states.size())), poses, buf, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
                 poses.popPose();

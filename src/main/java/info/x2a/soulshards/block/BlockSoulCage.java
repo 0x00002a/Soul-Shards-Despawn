@@ -7,18 +7,21 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.*;
-import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -29,34 +32,14 @@ public class BlockSoulCage extends Block implements EntityBlock {
     public static final Property<Boolean> POWERED = BooleanProperty.create("powered");
 
     public BlockSoulCage() {
-        super(Properties.copy(Blocks.SPAWNER));
+        super(Properties.ofFullCopy(Blocks.SPAWNER));
 
         registerDefaultState(getStateDefinition().any().setValue(ACTIVE, false).setValue(POWERED, false));
     }
+
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> factory) {
         factory.add(ACTIVE, POWERED);
-    }
-
-    @Override
-    public @NotNull InteractionResult use(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, Player player, @NotNull InteractionHand hand,
-                                          @NotNull BlockHitResult result) {
-        if (!player.isCrouching())
-            return InteractionResult.PASS;
-
-        var cage = (TileEntitySoulCage) level.getBlockEntity(pos);
-        if (cage == null) {
-            return InteractionResult.PASS;
-        }
-        var shard = cage.getInventory().getItem(0);
-        if (shard.isEmpty())
-            return InteractionResult.PASS;
-
-        if (!player.getInventory().add(shard)) {
-            ItemEntity entity = new ItemEntity(level, pos.getX(), pos.getY(), pos.getZ(), shard);
-            level.addFreshEntity(entity);
-        }
-        return InteractionResult.SUCCESS;
     }
 
 
@@ -70,6 +53,26 @@ public class BlockSoulCage extends Block implements EntityBlock {
         }
 
         super.onRemove(blockState, level, blockPos, blockState2, boolean_1);
+    }
+
+    @Override
+    protected @NotNull ItemInteractionResult useItemOn(ItemStack itemStack, BlockState blockState, Level level, BlockPos pos, Player player, InteractionHand interactionHand, BlockHitResult blockHitResult) {
+        if (!player.isCrouching())
+            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+
+        var cage = (TileEntitySoulCage) level.getBlockEntity(pos);
+        if (cage == null) {
+            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        }
+        var shard = cage.getInventory().getItem(0);
+        if (shard.isEmpty())
+            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+
+        if (!player.getInventory().add(shard)) {
+            ItemEntity entity = new ItemEntity(level, pos.getX(), pos.getY(), pos.getZ(), shard);
+            level.addFreshEntity(entity);
+        }
+        return ItemInteractionResult.SUCCESS;
     }
 
     @Override

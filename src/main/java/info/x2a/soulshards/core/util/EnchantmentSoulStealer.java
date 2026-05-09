@@ -1,9 +1,6 @@
 package info.x2a.soulshards.core.util;
 
-import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.item.enchantment.EnchantmentCategory;
-
+/*
 public class EnchantmentSoulStealer extends Enchantment {
 
     public EnchantmentSoulStealer() {
@@ -20,3 +17,4 @@ public class EnchantmentSoulStealer extends Enchantment {
         return 5;
     }
 }
+*/

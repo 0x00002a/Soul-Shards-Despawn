@@ -1,7 +1,6 @@
 package info.x2a.soulshards.compat.jei.categories;
 
 import com.mojang.blaze3d.platform.Lighting;
-import com.mojang.blaze3d.vertex.PoseStack;
 import info.x2a.soulshards.SoulShards;
 import info.x2a.soulshards.compat.jei.RecipeBackground;
 import info.x2a.soulshards.compat.jei.SoulShardsJei;
@@ -28,9 +27,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Blocks;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class CursingCategory implements IRecipeCategory<CursingRecipe> {
 
@@ -73,11 +69,11 @@ public class CursingCategory implements IRecipeCategory<CursingRecipe> {
     @Override
     public void setRecipe(IRecipeLayoutBuilder builder, CursingRecipe recipe, IFocusGroup focuses) {
         builder.addInvisibleIngredients(RecipeIngredientRole.CATALYST)
-               .addIngredients(Ingredient.of(Items.SOUL_SAND.getDefaultInstance().getItem().getDefaultInstance()));
+                .addIngredients(Ingredient.of(Items.SOUL_SAND.getDefaultInstance().getItem().getDefaultInstance()));
         builder.addSlot(RecipeIngredientRole.INPUT, (int) UI.inputPositions[0].x, (int) UI.inputPositions[0].y)
-               .addIngredients(recipe.getIngredients().get(0));
+                .addIngredients(recipe.getIngredients().get(0));
         builder.addSlot(RecipeIngredientRole.OUTPUT, (int) UI.outputPositions[0].x, (int) UI.outputPositions[0].y)
-               .addIngredients(Ingredient.of(recipe.getResult()));
+                .addIngredients(Ingredient.of(recipe.getResult()));
     }
 
     @Override
@@ -93,8 +89,8 @@ public class CursingCategory implements IRecipeCategory<CursingRecipe> {
         Lighting.setupForFlatItems();
         stack.pushPose();
         stack.translate(0, -1.5, 0);
-        brender.renderSingleBlock(RegistrarSoulShards.CURSED_FIRE.get()
-                                                                 .defaultBlockState(), stack, buf, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
+        brender.renderSingleBlock(RegistrarSoulShards.CURSED_FIRE
+                .defaultBlockState(), stack, buf, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
         stack.popPose();
         stack.pushPose();
         stack.translate(0, -2, 0);
@@ -108,7 +104,7 @@ public class CursingCategory implements IRecipeCategory<CursingRecipe> {
     public void getTooltip(ITooltipBuilder builder, CursingRecipe recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
         builder.add(Component.translatable("desc.soulshards.cursing").withStyle(ChatFormatting.DARK_AQUA));
         if (UI.inCraftArea((int) mouseX, (int) mouseY)) {
-            builder.add(RegistrarSoulShards.CURSED_FIRE.get().getName());
+            builder.add(RegistrarSoulShards.CURSED_FIRE.getName());
             builder.add(Blocks.SOUL_SAND.getName());
         }
     }

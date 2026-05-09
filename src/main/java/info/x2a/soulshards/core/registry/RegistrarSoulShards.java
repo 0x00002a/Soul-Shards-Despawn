@@ -1,6 +1,5 @@
 package info.x2a.soulshards.core.registry;
 
-import com.google.gson.reflect.TypeToken;
 import info.x2a.soulshards.SoulShards;
 import info.x2a.soulshards.api.IShardTier;
 import info.x2a.soulshards.block.BlockCursedFire;
@@ -10,8 +9,6 @@ import info.x2a.soulshards.block.TileEntitySoulCage;
 import info.x2a.soulshards.core.data.Binding;
 import info.x2a.soulshards.core.data.Tier;
 import info.x2a.soulshards.core.recipe.CursingRecipe;
-import info.x2a.soulshards.core.util.EnchantmentSoulStealer;
-import info.x2a.soulshards.core.util.GsonRecipeSerializer;
 import info.x2a.soulshards.item.ItemQuartzAndSteel;
 import info.x2a.soulshards.item.ItemSoulShard;
 import info.x2a.soulshards.item.ItemVileSword;
@@ -109,7 +106,7 @@ public class RegistrarSoulShards {
                 return "cursing";
             }
         });
-        CURSING_RECIPE_SERIALIZER = Registry.register(SoulRegistries.RECIPE_SERIALIZERS, CursingRecipe.ID, new GsonRecipeSerializer<>(TypeToken.get(CursingRecipe.class)));
+        //CURSING_RECIPE_SERIALIZER = Registry.register(SoulRegistries.RECIPE_SERIALIZERS, CursingRecipe.ID, new GsonRecipeSerializer<>(TypeToken.get(CursingRecipe.class)));
         SoulShards.Log.info("Recipes registered");
     }
 
@@ -123,11 +120,10 @@ public class RegistrarSoulShards {
                 () -> new Item(new Item.Properties()));
         regItem("vile_sword_base", () -> new Item(new Item.Properties().stacksTo(1)));
         QUARTZ_AND_STEEL = regItem("quartz_and_steel", ItemQuartzAndSteel::new);
-        SoulRegistries.ITEMS.register();
     }
 
     public static void registerEnchantments() {
-        SOUL_STEALER = Registry.register(SoulRegistries.ENCHANTMENTS, SoulShards.makeResource("soul_stealer"),
-                new EnchantmentSoulStealer());
+        /*SOUL_STEALER = Registry.register(SoulRegistries.ENCHANTMENTS, SoulShards.makeResource("soul_stealer"),
+                new EnchantmentSoulStealer());*/
     }
 }

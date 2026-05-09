@@ -3,12 +3,12 @@
 minecraft = "1.21.1"
 
 fabric_loader = "0.19.2"
-fabric_api="0.116.11+1.21.1"
+fabric_api = "0.116.11+1.21.1"
 
-wthit = "8.15.2"
-clothconfig = "11.1.136"
-modmenu = "7.2.2"
-jei = "15.19.5.99"
+wthit = "12.10.2"
+clothconfig = "15.0.140"
+modmenu = "11.0.4"
+jei = "19.27.0.340"
 
 [libraries]
 minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }

@@ -14,6 +14,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
+import net.fabricmc.fabric.api.gamerule.v1.GameRuleFactory;
+import net.fabricmc.fabric.api.gamerule.v1.GameRuleRegistry;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.MutableComponent;
@@ -84,14 +87,15 @@ public class SoulShards implements ModInitializer {
         afterLoad();
         Tier.readTiers();
         ConfigServer.handleMultiblock();
+        // give player the config on join
         ServerPlayerEvents.JOIN.register(p -> {
             if (!p.isLocalPlayer() && !p.getServer().isSingleplayer()) {
-                Channels.CONFIG_UPDATE.sendToPlayer(p, new ConfigUpdate(CONFIG_SERVER));
+                ServerPlayNetworking.send(p, new ConfigUpdate(CONFIG_SERVER));
             }
         });
 
-        allowCageSpawns = GameRules.register("allowCageSpawns", GameRules.Category.SPAWNING,
-                GameRules.BooleanValue.create(true));
+        allowCageSpawns = GameRuleRegistry.register("allowCageSpawns", GameRules.Category.SPAWNING,
+                GameRuleFactory.createBooleanRule(true));
         RegistrarSoulShards.init();
         EventHandler.init();
         initNetwork();
@@ -122,9 +126,9 @@ public class SoulShards implements ModInitializer {
                 })));
             });*/
         }
-        BlockRenderLayerMap.INSTANCE.putBlock(RegistrarSoulShards.SOUL_CAGE.get(), RenderType.cutout());
-        BlockRenderLayerMap.INSTANCE.putBlock(RegistrarSoulShards.CURSED_FIRE.get(), RenderType.cutout());
-        BlockRenderLayerMap.INSTANCE.putBlock(RegistrarSoulShards.HALLOWED_FIRE.get(), RenderType.cutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(RegistrarSoulShards.SOUL_CAGE, RenderType.cutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(RegistrarSoulShards.CURSED_FIRE, RenderType.cutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(RegistrarSoulShards.HALLOWED_FIRE, RenderType.cutout());
         NetworkMgr.initClient();
     }
 }

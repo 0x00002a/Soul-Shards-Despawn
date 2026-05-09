@@ -3,20 +3,23 @@ package info.x2a.soulshards.core.data;
 import info.x2a.soulshards.api.IBinding;
 import info.x2a.soulshards.api.IShardTier;
 import info.x2a.soulshards.core.util.INBTSerializable;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
 public class Binding implements IBinding, INBTSerializable<CompoundTag> {
 
+    @Nullable
     private ResourceLocation boundEntity;
+    @Nullable
     private UUID owner;
     private int kills;
 
-    public Binding(ResourceLocation boundEntity, UUID owner, int kills) {
+    public Binding(@Nullable ResourceLocation boundEntity, @Nullable UUID owner, int kills) {
         this.boundEntity = boundEntity;
         this.owner = owner;
         this.kills = kills;
@@ -86,7 +89,7 @@ public class Binding implements IBinding, INBTSerializable<CompoundTag> {
     @Override
     public void deserializeNBT(CompoundTag nbt) {
         if (nbt.contains("bound"))
-            this.boundEntity = new ResourceLocation(nbt.getString("bound"));
+            this.boundEntity = ResourceLocation.withDefaultNamespace(nbt.getString("bound"));
         if (nbt.contains("owner"))
             this.owner = UUID.fromString(nbt.getString("owner"));
         this.kills = nbt.getInt("kills");
@@ -94,10 +97,10 @@ public class Binding implements IBinding, INBTSerializable<CompoundTag> {
 
     @Nullable
     public static Binding fromNBT(ItemStack stack) {
-        CompoundTag tag = stack.getTag();
+        var tag = stack.get(DataComponents.CUSTOM_DATA);
         if (tag == null || !tag.contains("binding"))
             return null;
 
-        return new Binding(tag.getCompound("binding"));
+        return new Binding(tag.copyTag().getCompound("binding"));
     }
 }

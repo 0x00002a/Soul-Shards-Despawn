@@ -3,7 +3,6 @@ package info.x2a.soulshards.core.data;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.reflect.TypeToken;
-import dev.architectury.platform.Platform;
 import info.x2a.soulshards.SoulShards;
 import info.x2a.soulshards.api.IShardTier;
 import info.x2a.soulshards.core.util.JsonUtil;
@@ -91,7 +90,7 @@ public class Tier implements IShardTier {
     }
 
     public static void readTiers() {
-        Tier[] tiers = JsonUtil.fromJson(TypeToken.get(Tier[].class), new File(Platform.getConfigFolder().toFile(),
+        Tier[] tiers = JsonUtil.fromJson(TypeToken.get(Tier[].class), new File(SoulShards.CONFIG_PATH.toString(),
                 SoulShards.MODID + "/tiers.json"), generateDefaults());
         for (Tier tier : tiers) {
             TIERS.put(tier.killRequirement, tier);

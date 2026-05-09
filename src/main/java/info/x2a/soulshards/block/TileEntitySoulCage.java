@@ -4,26 +4,26 @@ import info.x2a.soulshards.SoulShards;
 import info.x2a.soulshards.api.CageSpawnEvent;
 import info.x2a.soulshards.api.IShardTier;
 import info.x2a.soulshards.api.ISoulShard;
-import info.x2a.soulshards.core.registry.RegistrarSoulShards;
 import info.x2a.soulshards.core.data.Binding;
+import info.x2a.soulshards.core.registry.RegistrarSoulShards;
 import info.x2a.soulshards.item.ItemSoulShard;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
 
@@ -36,7 +36,7 @@ public class TileEntitySoulCage extends BlockEntity {
     private boolean active;
 
     public TileEntitySoulCage(BlockPos pos, BlockState state) {
-        super(RegistrarSoulShards.SOUL_CAGE_TE.get(), pos, state);
+        super(RegistrarSoulShards.SOUL_CAGE_TE, pos, state);
 
         this.inventory = new SimpleContainer(1) {
             @Override
@@ -46,7 +46,7 @@ public class TileEntitySoulCage extends BlockEntity {
 
                 Binding binding = ((ItemSoulShard) stack.getItem()).getBinding(stack);
                 return binding != null && binding.getBoundEntity() != null && SoulShards.CONFIG_SERVER.getEntityList()
-                                                                                                      .isEnabled(binding.getBoundEntity());
+                        .isEnabled(binding.getBoundEntity());
             }
         };
     }
@@ -57,7 +57,7 @@ public class TileEntitySoulCage extends BlockEntity {
             return Optional.empty();
         }
         BlockState state = level.getBlockState(pos);
-        if (state.getBlock() != RegistrarSoulShards.SOUL_CAGE.get())
+        if (state.getBlock() != RegistrarSoulShards.SOUL_CAGE)
             return Optional.empty();
 
         ItemStack shardStack = inventory.getItem(0);
@@ -128,23 +128,13 @@ public class TileEntitySoulCage extends BlockEntity {
     }
 
     @Override
-    public void load(@NotNull CompoundTag tag) {
-        super.load(tag);
-
-        if (tag.contains("shard"))
-            inventory.setItem(0, ItemStack.of(tag.getCompound("shard")));
-        this.active = tag.getBoolean("active");
-        this.activeTime = tag.getLong("activeTime");
-    }
-
-    @Override
-    public void saveAdditional(@NotNull CompoundTag tag) {
+    public void saveAdditional(@NotNull CompoundTag tag, HolderLookup.Provider provider) {
         ItemStack shardStack = inventory.getItem(0);
         if (!shardStack.isEmpty())
-            tag.put("shard", shardStack.save(new CompoundTag()));
+            tag.put("shard", shardStack.save(provider));
         tag.putBoolean("active", active);
         tag.putLong("activeTime", activeTime);
-        super.saveAdditional(tag);
+        super.saveAdditional(tag, provider);
     }
 
     private void spawnEntities() {
@@ -189,7 +179,6 @@ public class TileEntitySoulCage extends BlockEntity {
                         ((Mob) spawned).finalizeSpawn((ServerLevel) level,
                                 level.getCurrentDifficultyAt(pos),
                                 MobSpawnType.SPAWNER,
-                                null,
                                 null);
                     }
                     if (level instanceof ServerLevel lvl) {
@@ -242,11 +231,21 @@ public class TileEntitySoulCage extends BlockEntity {
         Binding binding = getBinding();
         //noinspection ConstantConditions
         return binding != null && binding.getOwner() != null && getLevel().getServer()
-                                                                          .getPlayerList()
-                                                                          .getPlayer(binding.getOwner()) == null;
+                .getPlayerList()
+                .getPlayer(binding.getOwner()) == null;
     }
 
     public Container getInventory() {
         return inventory;
+    }
+
+    @Override
+    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider provider) {
+        super.loadAdditional(tag, provider);
+
+        if (tag.contains("shard"))
+            inventory.setItem(0, ItemStack.parseOptional(provider, tag.getCompound("shard")));
+        this.active = tag.getBoolean("active");
+        this.activeTime = tag.getLong("activeTime");
     }
 }

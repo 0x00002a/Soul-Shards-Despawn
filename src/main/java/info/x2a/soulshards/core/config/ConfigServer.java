@@ -2,7 +2,6 @@ package info.x2a.soulshards.core.config;
 
 import com.google.common.collect.Maps;
 import com.google.gson.reflect.TypeToken;
-import dev.architectury.platform.Platform;
 import info.x2a.soulshards.SoulShards;
 import info.x2a.soulshards.core.data.MultiblockPattern;
 import info.x2a.soulshards.core.util.JsonUtil;
@@ -39,7 +38,7 @@ public class ConfigServer {
     }
 
     public static void handleMultiblock() {
-        File multiblockFile = new File(Platform.getConfigFolder().toFile(), SoulShards.MODID + "/multiblock.json");
+        File multiblockFile = new File(SoulShards.CONFIG_PATH.toString(), SoulShards.MODID + "/multiblock.json");
         if (!multiblockFile.exists()) {
             try {
                 FileUtils.copyInputStreamToFile(ConfigServer.class.getResourceAsStream("/data/multiblock.json"),

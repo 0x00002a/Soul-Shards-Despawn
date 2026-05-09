@@ -1,14 +1,14 @@
 package info.x2a.soulshards.api;
 
-import dev.architectury.event.Event;
-import dev.architectury.event.EventFactory;
+import net.fabricmc.fabric.api.event.Event;
+import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 
 public interface CageSpawnEvent {
 
-    Event<CageSpawnEvent> CAGE_SPAWN = EventFactory.of(
+    Event<CageSpawnEvent> CAGE_SPAWN = EventFactory.createArrayBacked(CageSpawnEvent.class,
             (listeners) -> (binding, shardStack, toSpawn) -> {
                 for (CageSpawnEvent event : listeners) {
                     InteractionResult result = event.onCageSpawn(binding, shardStack, toSpawn);

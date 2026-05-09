@@ -11,9 +11,13 @@ import info.x2a.soulshards.core.registry.RegistrarSoulShards;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.ingredients.IIngredientType;
-import mezz.jei.api.registration.*;
+import mezz.jei.api.registration.IModIngredientRegistration;
+import mezz.jei.api.registration.IRecipeCatalystRegistration;
+import mezz.jei.api.registration.IRecipeCategoryRegistration;
+import mezz.jei.api.registration.IRecipeRegistration;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec2;
 import org.jetbrains.annotations.NotNull;
@@ -37,11 +41,6 @@ public class SoulShardsJei implements IModPlugin {
     }
 
     @Override
-    public void registerItemSubtypes(ISubtypeRegistration registration) {
-        registration.useNbtForSubtypes(RegistrarSoulShards.SOUL_SHARD.get());
-    }
-
-    @Override
     public void registerCategories(IRecipeCategoryRegistration registration) {
         IModPlugin.super.registerCategories(registration);
         var gui = registration.getJeiHelpers().getGuiHelper();
@@ -56,14 +55,14 @@ public class SoulShardsJei implements IModPlugin {
         var level = Minecraft.getInstance().level;
         if (level != null) {
             registration.addRecipes(CursingCategory.RECIPE, level.getRecipeManager()
-                                                                 .getAllRecipesFor(RegistrarSoulShards.CURSING_RECIPE.get()));
+                    .getAllRecipesFor(RegistrarSoulShards.CURSING_RECIPE).stream().map(RecipeHolder::value).toList());
         }
     }
 
     @Override
     public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
         registration.addRecipeCatalyst(Blocks.SOUL_SAND.asItem().getDefaultInstance(), CursingCategory.RECIPE);
-        registration.addRecipeCatalyst(RegistrarSoulShards.QUARTZ_AND_STEEL.get()
-                                                                           .getDefaultInstance(), CursingCategory.RECIPE);
+        registration.addRecipeCatalyst(RegistrarSoulShards.QUARTZ_AND_STEEL
+                .getDefaultInstance(), CursingCategory.RECIPE);
     }
 }

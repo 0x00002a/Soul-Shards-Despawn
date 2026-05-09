@@ -8,25 +8,22 @@ import com.mojang.serialization.JsonOps;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.InteractionResult;
-
-import net.minecraft.world.level.block.EntityBlock;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.properties.SlabType;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.SlabType;
 import org.jetbrains.annotations.Nullable;
 
-import java.awt.Point;
+import java.awt.*;
 import java.lang.reflect.Type;
 import java.util.*;
+import java.util.List;
 import java.util.function.Predicate;
 
 @JsonAdapter(MultiblockPattern.Serializer.class)
@@ -48,9 +45,9 @@ public class MultiblockPattern {
                         Blocks.CHISELED_QUARTZ_BLOCK.defaultBlockState(),
                         Blocks.SMOOTH_QUARTZ.defaultBlockState(),
                         Blocks.QUARTZ_SLAB.defaultBlockState()
-                                          .setValue(BlockStateProperties.SLAB_TYPE, SlabType.DOUBLE),
+                                .setValue(BlockStateProperties.SLAB_TYPE, SlabType.DOUBLE),
                         Blocks.SMOOTH_QUARTZ_SLAB.defaultBlockState()
-                                                 .setValue(BlockStateProperties.SLAB_TYPE, SlabType.DOUBLE)
+                                .setValue(BlockStateProperties.SLAB_TYPE, SlabType.DOUBLE)
                 ));
                 put('G', new Slot(Blocks.GLOWSTONE));
             }}
@@ -160,7 +157,7 @@ public class MultiblockPattern {
             JsonObject json = element.getAsJsonObject();
 
             var itemId =
-                    new ResourceLocation(json.getAsJsonObject("catalyst").getAsJsonPrimitive("item").getAsString());
+                    ResourceLocation.withDefaultNamespace(json.getAsJsonObject("catalyst").getAsJsonPrimitive("item").getAsString());
             ItemStack catalyst = new ItemStack(BuiltInRegistries.ITEM.get(itemId), 1);
 
             String[] shape = context.deserialize(json.getAsJsonArray("shape"), String[].class);
@@ -181,7 +178,7 @@ public class MultiblockPattern {
             } else {
                 resource = element.getAsString();
             }
-            return BuiltInRegistries.BLOCK.get(new ResourceLocation(resource));
+            return BuiltInRegistries.BLOCK.get(ResourceLocation.withDefaultNamespace(resource));
         }
 
         @Override

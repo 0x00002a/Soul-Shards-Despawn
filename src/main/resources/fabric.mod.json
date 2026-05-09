@@ -19,10 +19,7 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "info.x2a.soulshards.fabric.SoulShardsModFabric"
-    ],
-    "client": [
-      "info.x2a.soulshards.fabric.SoulShardsModFabricClient"
+      "info.x2a.soulshards.SoulShards"
     ],
     "modmenu": [
       "info.x2a.soulshards.compat.modmenu.SoulShardsModMenu"
@@ -33,8 +30,7 @@
   },
   "depends": {
     "fabric": "*",
-    "minecraft": "=${minecraft_version}",
-    "architectury": ">=${architectury_version}"
+    "minecraft": "=${minecraft_version}"
   },
   "recommends": {
     "modmenu": ">=${modmenu_version}",

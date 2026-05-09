@@ -1,8 +1,6 @@
 package info.x2a.soulshards.compat.clothconfig;
 
 
-import dev.architectury.event.events.client.ClientTickEvent;
-import dev.architectury.utils.GameInstance;
 import info.x2a.soulshards.SoulShards;
 import info.x2a.soulshards.core.config.ConfigClient;
 import info.x2a.soulshards.core.config.ConfigServer;
@@ -12,13 +10,18 @@ import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
 import me.shedaniel.clothconfig2.impl.builders.AbstractFieldBuilder;
 import me.shedaniel.clothconfig2.impl.builders.BooleanToggleBuilder;
 import me.shedaniel.clothconfig2.impl.builders.IntFieldBuilder;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 
 public class SoulShardsConfigScreen {
+    private static final AtomicBoolean DISPLAY_POPUP = new AtomicBoolean(false);
+
     private class Helper<Conf> {
         private final ConfigBuilder builder;
         private final ConfigEntryBuilder entry;
@@ -74,8 +77,8 @@ public class SoulShardsConfigScreen {
     private static final ConfigClient DEFAULT_CONFIG_CLI = new ConfigClient();
 
     private static boolean playerHasPerms() {
-        if (GameInstance.getClient().player != null) {
-            return GameInstance.getClient().player.hasPermissions(4);
+        if (Minecraft.getInstance().player != null) {
+            return Minecraft.getInstance().player.hasPermissions(4);
         } else {
             return true;
         }
@@ -89,8 +92,8 @@ public class SoulShardsConfigScreen {
                 .setSavingRunnable(this::onSave);
         var entry = builder.entryBuilder();
         var hasPerms = true;
-        if (GameInstance.getClient().player != null) {
-            hasPerms = GameInstance.getClient().player.hasPermissions(4);
+        if (Minecraft.getInstance().player != null) {
+            hasPerms = Minecraft.getInstance().player.hasPermissions(4);
         }
         if (hasPerms) { // OP perms
             addServerCfg(builder);
@@ -144,15 +147,19 @@ public class SoulShardsConfigScreen {
     }
 
     public static void popup() {
-        ClientTickEvent.CLIENT_POST.register(new ClientTickEvent.Client() {
+        DISPLAY_POPUP.set(true);
+        ClientTickEvents.END_CLIENT_TICK.register(new ClientTickEvents.EndTick() {
             @Override
-            public void tick(Minecraft ev) {
+            public void onEndTick(Minecraft ev) {
+                if (!DISPLAY_POPUP.compareAndSet(true, false)) {
+                    return;
+                }
                 var screen = new SoulShardsConfigScreen(null).screen();
                 ev.forceSetScreen(screen);
-                ClientTickEvent.CLIENT_POST.unregister(this);
             }
         });
     }
+
 
     public Screen screen() {
         return popup;
@@ -160,9 +167,9 @@ public class SoulShardsConfigScreen {
 
     private void onSave() {
         SoulShards.saveClient();
-        if (GameInstance.getClient().player != null && playerHasPerms()) {
+        if (Minecraft.getInstance().player != null && playerHasPerms()) {
             NetworkMgr.sendConfig(SoulShards.CONFIG_SERVER);
-        } else if (GameInstance.getClient().player == null && GameInstance.getServer() == null) { // In menu
+        } else if (Minecraft.getInstance().level == null) { // In menu
             SoulShards.saveServer();
         }
     }

@@ -2,12 +2,11 @@ package info.x2a.soulshards.core.mixin;
 
 import info.x2a.soulshards.SoulShards;
 import info.x2a.soulshards.core.EventHandler;
-
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -35,7 +34,7 @@ public class MixinEntityLiving {
             LivingEntity entity = (LivingEntity) (Object) this;
             if (entity instanceof Player)
                 return;
-            entity.getEntityData().define(SoulShards.cageBornTag, false);
+            entity.getEntityData().set(SoulShards.cageBornTag, false);
         } catch (Exception e) {
             SoulShards.Log.error("during synched data: {}", e.getMessage());
         }

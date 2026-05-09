@@ -1,29 +1,24 @@
 package info.x2a.soulshards.item;
 
-import dev.architectury.registry.CreativeTabRegistry;
 import info.x2a.soulshards.SoulShards;
-import info.x2a.soulshards.api.IShardTier;
 import info.x2a.soulshards.api.ISoulShard;
 import info.x2a.soulshards.block.TileEntitySoulCage;
-import info.x2a.soulshards.core.registry.RegistrarSoulShards;
 import info.x2a.soulshards.core.data.Binding;
 import info.x2a.soulshards.core.data.Tier;
+import info.x2a.soulshards.core.registry.RegistrarSoulShards;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
-import net.minecraft.core.NonNullList;
-import net.minecraft.core.Registry;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.item.*;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.SpawnerBlock;
 import net.minecraft.world.level.block.entity.SpawnerBlockEntity;
 import org.jetbrains.annotations.NotNull;
@@ -32,7 +27,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class ItemSoulShard extends Item implements ISoulShard {
-
     public ItemSoulShard() {
         super(new Properties().stacksTo(1));
     }
@@ -91,9 +85,9 @@ public class ItemSoulShard extends Item implements ISoulShard {
             try {
                 ResourceLocation entityId =
                         EntityType.getKey(spawner.getSpawner()
-                                                 .getOrCreateDisplayEntity(context.getLevel(),
-                                                         context.getLevel().random, context.getClickedPos())
-                                                 .getType());
+                                .getOrCreateDisplayEntity(context.getLevel(),
+                                        context.getClickedPos())
+                                .getType());
                 if (!SoulShards.CONFIG_SERVER.getEntityList().isEnabled(entityId)) {
                     SoulShards.Log.debug("Tried to consume entity which is disallowed in the " +
                                     "config: {}",
@@ -111,13 +105,13 @@ public class ItemSoulShard extends Item implements ISoulShard {
                 }
 
                 updateBinding(context.getItemInHand(), binding.addKills(SoulShards.CONFIG_SERVER.getBalance()
-                                                                                                .getAbsorptionBonus()));
+                        .getAbsorptionBonus()));
                 context.getLevel().destroyBlock(context.getClickedPos(), false);
                 return InteractionResult.SUCCESS;
             } catch (Throwable e) {
                 e.printStackTrace();
             }
-        } else if (state.getBlock() == RegistrarSoulShards.SOUL_CAGE.get()) {
+        } else if (state.getBlock() == RegistrarSoulShards.SOUL_CAGE) {
             if (binding.getBoundEntity() == null)
                 return InteractionResult.FAIL;
 
@@ -139,8 +133,14 @@ public class ItemSoulShard extends Item implements ISoulShard {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> tooltip,
-                                TooltipFlag options) {
+    public @NotNull String getDescriptionId(ItemStack stack) {
+        Binding binding = getBinding(stack);
+        return super.getDescriptionId(stack) + (binding == null || binding.getBoundEntity() == null ? "_unbound" : "");
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext tooltipContext, List<Component> tooltip, TooltipFlag options) {
+
         Binding binding = getBinding(stack);
         if (binding == null)
             return;
@@ -160,19 +160,13 @@ public class ItemSoulShard extends Item implements ISoulShard {
         tooltip.add(Component.translatable("tooltip.soulshards.tier",
                 binding.getTier().getIndex()).withStyle(greyColor));
         tooltip.add(Component.translatable("tooltip.soulshards.kills", binding.getKills())
-                             .setStyle(greyColor));
+                .setStyle(greyColor));
         if (options.isAdvanced()) {
             if (binding.getOwner() != null) {
                 tooltip.add(Component.translatable("tooltip.soulshards.owner",
                         binding.getOwner().toString()).withStyle(ChatFormatting.AQUA));
             }
         }
-    }
-
-    @Override
-    public @NotNull String getDescriptionId(ItemStack stack) {
-        Binding binding = getBinding(stack);
-        return super.getDescriptionId(stack) + (binding == null || binding.getBoundEntity() == null ? "_unbound" : "");
     }
 
     @Override
@@ -188,10 +182,8 @@ public class ItemSoulShard extends Item implements ISoulShard {
     }
 
     public void updateBinding(ItemStack stack, Binding binding) {
-        CompoundTag tag = stack.getTag();
-        if (tag == null)
-            stack.setTag(tag = new CompoundTag());
-
-        tag.put("binding", binding.serializeNBT());
+        CustomData.update(DataComponents.CUSTOM_DATA, stack, tag -> {
+            tag.put("binding", binding.serializeNBT());
+        });
     }
 }

@@ -19,7 +19,10 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "info.x2a.soulshards.SoulShards"
+      "info.x2a.soulshards.SoulShardsMod"
+    ],
+    "client": [
+      "info.x2a.soulshards.SoulShardsModClient"
     ],
     "modmenu": [
       "info.x2a.soulshards.compat.modmenu.SoulShardsModMenu"

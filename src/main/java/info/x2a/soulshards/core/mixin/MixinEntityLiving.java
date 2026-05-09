@@ -1,13 +1,10 @@
 package info.x2a.soulshards.core.mixin;
 
-import info.x2a.soulshards.SoulShards;
 import info.x2a.soulshards.core.EventHandler;
-import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -19,25 +16,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class MixinEntityLiving {
 
     @Shadow
-    @Final
-    private boolean dead;
+    protected boolean dead;
 
-    @Inject(method = "<clinit>", at = @At("RETURN"))
-    private static void registerDataTracker(CallbackInfo callbackInfo) {
-        SoulShards.cageBornTag = SynchedEntityData.defineId(LivingEntity.class,
-                EntityDataSerializers.BOOLEAN);
-    }
-
-    @Inject(method = "defineSynchedData", at = @At("TAIL"))
-    private void initDataTracker(CallbackInfo callbackInfo) {
-        try {
-            LivingEntity entity = (LivingEntity) (Object) this;
-            if (entity instanceof Player)
-                return;
-            entity.getEntityData().set(SoulShards.cageBornTag, false);
-        } catch (Exception e) {
-            SoulShards.Log.error("during synched data: {}", e.getMessage());
+    @Inject(method = "defineSynchedData(Lnet/minecraft/network/syncher/SynchedEntityData$Builder;)V", at = @At("TAIL"))
+    private void soulshards$defineSynchedData(SynchedEntityData.Builder builder, CallbackInfo ci) {
+        var self = (LivingEntity) (Object) this;
+        if (self instanceof Player) {
+            return;
         }
+        //builder.define(SoulShards.cageBornTag, false);
     }
 
     @Inject(method = "die", at = @At("HEAD"))
@@ -49,7 +36,7 @@ public class MixinEntityLiving {
         EventHandler.onEntityDeath(entity, damageSource);
     }
 
-    @Inject(method = "shouldDropExperience", at = @At("RETURN"))
+    @Inject(method = "shouldDropExperience", at = @At("RETURN"), cancellable = true)
     private void shouldDropXp(CallbackInfoReturnable<Boolean> cir) {
         var me = (LivingEntity) (Object) this;
         if (!cir.getReturnValue()) {

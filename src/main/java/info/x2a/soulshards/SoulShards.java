@@ -9,18 +9,16 @@ import info.x2a.soulshards.core.network.NetworkMgr;
 import info.x2a.soulshards.core.network.message.ConfigUpdate;
 import info.x2a.soulshards.core.registry.RegistrarSoulShards;
 import info.x2a.soulshards.core.util.JsonResource;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleFactory;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.GameRules;
@@ -30,7 +28,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.File;
 import java.nio.file.Path;
 
-public class SoulShards implements ModInitializer {
+public class SoulShards {
     public static final String MODID = "soulshards";
     public static final Logger Log = LogManager.getLogger("Soul Shards Despawn");
 
@@ -42,7 +40,7 @@ public class SoulShards implements ModInitializer {
             new ConfigClient(), TypeToken.get(ConfigClient.class));
     public static ConfigServer CONFIG_SERVER;
     public static ConfigClient CONFIG_CLIENT;
-    public static EntityDataAccessor<Boolean> cageBornTag;
+    public static EntityDataAccessor<Boolean> cageBornTag = SynchedEntityData.defineId(LivingEntity.class, EntityDataSerializers.BOOLEAN);
     public static GameRules.Key<GameRules.BooleanValue> allowCageSpawns;
     public static boolean IS_CLOTH_CONFIG_LOADED;
     public static final String BOSS_TAG = "c:bosses";
@@ -100,35 +98,14 @@ public class SoulShards implements ModInitializer {
         initNetwork();
     }
 
-    @Override
-    public void onInitialize() {
-        if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
-            initClient();
-        } else {
-            initServer();
+    static {
+        // Force LivingEntity to fully class-init (and thus run all its own defineId calls)
+        // before we allocate our own id. Otherwise we may get an id that vanilla then re-uses.
+        try {
+            Class.forName("net.minecraft.world.entity.LivingEntity");
+            Class.forName("net.minecraft.world.entity.player.Player");
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
         }
-
-    }
-
-    static void initServer() {
-        SoulShards.initCommon();
-        NetworkMgr.initServer();
-    }
-
-    static void initClient() {
-        SoulShards.initCommon();
-        SoulShards.afterLoad();
-        if (SoulShards.IS_CLOTH_CONFIG_LOADED) {
-            /*ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, env) -> {
-                dispatcher.register(Commands.literal("soulshards").then(Commands.literal("config").executes((context) -> {
-                    SoulShardsConfigScreen.popup();
-                    return 1;
-                })));
-            });*/
-        }
-        BlockRenderLayerMap.INSTANCE.putBlock(RegistrarSoulShards.SOUL_CAGE, RenderType.cutout());
-        BlockRenderLayerMap.INSTANCE.putBlock(RegistrarSoulShards.CURSED_FIRE, RenderType.cutout());
-        BlockRenderLayerMap.INSTANCE.putBlock(RegistrarSoulShards.HALLOWED_FIRE, RenderType.cutout());
-        NetworkMgr.initClient();
     }
 }

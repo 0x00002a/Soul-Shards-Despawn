@@ -57,11 +57,6 @@ public class CursingCategory implements IRecipeCategory<CursingRecipe> {
     }
 
     @Override
-    public @NotNull IDrawable getBackground() {
-        return background;
-    }
-
-    @Override
     public @NotNull IDrawable getIcon() {
         return icon;
     }

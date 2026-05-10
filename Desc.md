@@ -1,6 +1,6 @@
 # Soul Shards Despawn
 
-![](https://i.imgur.com/WwHXXWo.png)
+![](https://github.com/0x00002a/Soul-Shards-Despawn/blob/b84d3609e99c6f5fc41979b8236c22450000b994/images/soul-shards-banner.png)
 
 Adds balanced & configurable spawners for any mob, modded or vanilla!
 
@@ -14,7 +14,7 @@ This mod requires getting to the nether before it can be started.
 
 To get started with this mod you will need to create a soul shard. You will need a diamond and a multiblock of the form:
 
-![JEI crafting screen](https://i.imgur.com/KoVd6nq.png)
+![JEI crafting screen](https://github.com/0x00002a/Soul-Shards-Despawn/blob/b84d3609e99c6f5fc41979b8236c22450000b994/images/soul-shards-jei.png)
 
 Once you have placed these blocks simply right-click the glowstone with the diamond in your hand.
 

@@ -24,7 +24,7 @@ public class ItemVileSword extends SwordItem implements ISoulWeapon {
 
     @Override
     public int getSoulBonus(ItemStack stack, Player player, LivingEntity killedEntity) {
-        return 1;
+        return 2;
     }
 
 

@@ -101,27 +101,32 @@ public class EventHandler {
             }
 
             ItemStack shardStack = getFirstShard(player, entityId);
-            if (shardStack.isEmpty())
+            if (shardStack.isEmpty()) {
                 return;
+            }
 
             ItemSoulShard shard = (ItemSoulShard) shardStack.getItem();
             Binding binding = shard.getBinding(shardStack);
-            if (binding == null)
+            if (binding == null) {
                 binding = getNewBinding(killed);
+            }
 
             var mainHand = player.getMainHandItem();
             var enchantment = player.level().registryAccess().registry(Registries.ENCHANTMENT).get().getHolder(SoulShards.makeResource("soul_stealer")).get();
-            int soulsGained = 1 + mainHand.get(DataComponents.ENCHANTMENTS).getLevel(enchantment);
-            if (mainHand.getItem() instanceof ISoulWeapon)
-                soulsGained += ((ISoulWeapon) mainHand.getItem()).getSoulBonus(mainHand, player, killed);
+            int soulsGained = 1 + (int) Math.pow(2.0, mainHand.get(DataComponents.ENCHANTMENTS).getLevel(enchantment));
+            if (mainHand.getItem() instanceof ISoulWeapon w) {
+                soulsGained *= w.getSoulBonus(mainHand, player, killed);
+            }
 
             soulsGained = BindingEvent.GAIN_SOULS.invoker().getGainedSouls(killed, binding, soulsGained);
 
-            if (binding.getBoundEntity() == null)
+            if (binding.getBoundEntity() == null) {
                 binding.setBoundEntity(entityId);
+            }
 
-            if (binding.getOwner() == null)
+            if (binding.getOwner() == null) {
                 binding.setOwner(player.getGameProfile().getId());
+            }
 
             shard.updateBinding(shardStack, binding.addKills(soulsGained));
         }

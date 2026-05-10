@@ -72,8 +72,6 @@ public class RegistrarSoulShards {
         registerRecipes();
         registerBlocks();
         registerItems();
-        registerEnchantments();
-
     }
 
     public static <T extends Item> T registerAndAddCreative(Registry<Item> reg,
@@ -128,7 +126,6 @@ public class RegistrarSoulShards {
 
     public static void registerItems() {
         regItem("soul_cage", () -> new BlockItem(SOUL_CAGE, new Item.Properties()));
-        regItem("vile_dust", () -> new Item(new Item.Properties()));
         regItem("vile_sword", ItemVileSword::new);
         regItem("corrupted_essence", () -> new Item(new Item.Properties()));
         SOUL_SHARD = regItem("soul_shard", () -> new ItemSoulShard());
@@ -136,10 +133,5 @@ public class RegistrarSoulShards {
                 () -> new Item(new Item.Properties()));
         regItem("vile_sword_base", () -> new Item(new Item.Properties().stacksTo(1)));
         QUARTZ_AND_STEEL = regItem("quartz_and_steel", ItemQuartzAndSteel::new);
-    }
-
-    public static void registerEnchantments() {
-        /*SOUL_STEALER = Registry.register(SoulRegistries.ENCHANTMENTS, SoulShards.makeResource("soul_stealer"),
-                new EnchantmentSoulStealer());*/
     }
 }

@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " C ",
+    "CIC",
+    " C "
+  ],
+  "key": {
+    "C": {
+      "item": "soulshards:corrupted_essence"
+    },
+    "I": {
+      "item": "minecraft:gold_ingot"
+    }
+  },
+  "result": {
+    "id": "soulshards:corrupted_ingot"
+  }
+}

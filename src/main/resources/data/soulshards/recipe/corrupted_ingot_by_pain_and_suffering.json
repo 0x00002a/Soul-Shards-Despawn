@@ -1,13 +1,16 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    " C ",
     "CIC",
-    " C "
+    "ISI",
+    "CIC"
   ],
   "key": {
     "C": {
-      "item": "soulshards:corrupted_essence"
+      "item": "minecraft:crying_obsidian"
+    },
+    "S": {
+      "item": "minecraft:gold_ingot"
     },
     "I": {
       "item": "minecraft:iron_ingot"

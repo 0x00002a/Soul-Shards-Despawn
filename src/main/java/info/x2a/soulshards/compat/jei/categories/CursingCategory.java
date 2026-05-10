@@ -27,6 +27,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Blocks;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class CursingCategory implements IRecipeCategory<CursingRecipe> {
 
@@ -54,6 +55,11 @@ public class CursingCategory implements IRecipeCategory<CursingRecipe> {
     @Override
     public @NotNull Component getTitle() {
         return Component.translatable("title.soulshards.cursing");
+    }
+
+    @Override
+    public @Nullable IDrawable getBackground() {
+        return background;
     }
 
     @Override

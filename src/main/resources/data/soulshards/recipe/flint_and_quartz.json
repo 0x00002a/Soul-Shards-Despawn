@@ -2,7 +2,7 @@
   "type": "minecraft:crafting_shapeless",
   "ingredients": [
     {
-      "item": "minecraft:iron_ingot"
+      "item": "soulshards:corrupted_ingot"
     },
     {
       "item": "minecraft:quartz"

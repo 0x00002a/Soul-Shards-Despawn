@@ -32,8 +32,6 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.function.Supplier;
-
 public class RegistrarSoulShards {
 
     public static BlockSoulCage SOUL_CAGE;
@@ -44,6 +42,7 @@ public class RegistrarSoulShards {
 
     public static ItemSoulShard SOUL_SHARD;
     public static ItemQuartzAndSteel QUARTZ_AND_STEEL;
+    public static Item VILE_SWORD_HAND_MODEL;
 
     public static Item CORRUPTED_INGOT;
     public static Enchantment SOUL_STEALER;
@@ -97,8 +96,8 @@ public class RegistrarSoulShards {
                         .build(null));
     }
 
-    private static <T extends Item> T regItem(String id, Supplier<T> source) {
-        return registerAndAddCreative(SoulRegistries.ITEMS, SoulShards.makeResource(id), source.get());
+    private static <T extends Item> T regItem(String id, T source) {
+        return registerAndAddCreative(SoulRegistries.ITEMS, SoulShards.makeResource(id), source);
     }
 
 
@@ -125,13 +124,14 @@ public class RegistrarSoulShards {
     }
 
     public static void registerItems() {
-        regItem("soul_cage", () -> new BlockItem(SOUL_CAGE, new Item.Properties()));
-        regItem("vile_sword", ItemVileSword::new);
-        regItem("corrupted_essence", () -> new Item(new Item.Properties()));
-        SOUL_SHARD = regItem("soul_shard", () -> new ItemSoulShard());
+        regItem("soul_cage", new BlockItem(SOUL_CAGE, new Item.Properties()));
+        regItem("vile_sword", new ItemVileSword());
+        regItem("corrupted_essence", new Item(new Item.Properties()));
+        SOUL_SHARD = regItem("soul_shard", new ItemSoulShard());
         CORRUPTED_INGOT = regItem("corrupted_ingot",
-                () -> new Item(new Item.Properties()));
-        regItem("vile_sword_base", () -> new Item(new Item.Properties().stacksTo(1)));
-        QUARTZ_AND_STEEL = regItem("quartz_and_steel", ItemQuartzAndSteel::new);
+                new Item(new Item.Properties()));
+        regItem("vile_sword_base", new Item(new Item.Properties().stacksTo(1)));
+        QUARTZ_AND_STEEL = regItem("quartz_and_steel", new ItemQuartzAndSteel());
+        VILE_SWORD_HAND_MODEL = Registry.register(BuiltInRegistries.ITEM, "vile_sword_in_hand", new Item(new Item.Properties()));
     }
 }

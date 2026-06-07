@@ -6,6 +6,8 @@ Adds balanced & configurable spawners for any mob, modded or vanilla!
 
 It is **highly** recommended you use a mod like JEI (or REI) for exploring the recipes in this mod.
 
+Note that [Sinytra Connector](https://modrinth.com/mod/connector) is REQUIRED for neoforge compatibility
+
 ## Progression
 
 This mod requires getting to the nether before it can be started.

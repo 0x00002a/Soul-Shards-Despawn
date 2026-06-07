@@ -1,3 +1,10 @@
+# 1.3.0
+
+- Vile sword -> Cursed sword
+- Resprites by divisibledeer
+- Vile dust + ingots removed
+- Rework of progression to gate corrupted dust behind getting your first corrupted bar
+
 # 1.x.5
 
 ## Fixes

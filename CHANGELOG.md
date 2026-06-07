@@ -4,6 +4,7 @@
 - Resprites by divisibledeer
 - Vile dust + ingots removed
 - Rework of progression to gate corrupted dust behind getting your first corrupted bar
+- Drop architectury and quilt in favor of connector and nobody using quilt (unfortunately)
 
 # 1.x.5
 

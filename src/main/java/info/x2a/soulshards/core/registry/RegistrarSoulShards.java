@@ -44,6 +44,7 @@ public class RegistrarSoulShards {
     public static ItemQuartzAndSteel QUARTZ_AND_STEEL;
     public static Item VILE_SWORD_HAND_MODEL;
 
+    public static Item VILE_SWORD;
     public static Item CORRUPTED_INGOT;
     public static Enchantment SOUL_STEALER;
     public static CreativeModeTab SOUL_SHARDS_TAB;
@@ -125,7 +126,7 @@ public class RegistrarSoulShards {
 
     public static void registerItems() {
         regItem("soul_cage", new BlockItem(SOUL_CAGE, new Item.Properties()));
-        regItem("vile_sword", new ItemVileSword());
+        VILE_SWORD = regItem("vile_sword", new ItemVileSword());
         regItem("corrupted_essence", new Item(new Item.Properties()));
         SOUL_SHARD = regItem("soul_shard", new ItemSoulShard());
         CORRUPTED_INGOT = regItem("corrupted_ingot",

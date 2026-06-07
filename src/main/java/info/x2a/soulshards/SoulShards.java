@@ -41,6 +41,7 @@ public class SoulShards {
     public static GameRules.Key<GameRules.BooleanValue> allowCageSpawns;
     public static boolean IS_CLOTH_CONFIG_LOADED;
     public static final String BOSS_TAG = "c:bosses";
+    public static final ResourceLocation SOUL_STEALER_TAG = SoulShards.makeResource("soul_stealer");
 
     public static boolean isBoss(LivingEntity creature) {
         return creature.getTags().contains(BOSS_TAG);

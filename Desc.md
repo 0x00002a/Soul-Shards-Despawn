@@ -34,9 +34,10 @@ seconds) | Spawn amount |
 | 4 | 512 |✔️|✔️| ❌ | 5 | 4 |
 | 5 | 1024 |✔️|✔️|✔️| 2 | 6 |
 
-To speed up the process you can use a vile sword, which adds an extra soul per kill. Alternatively there is the soul
-stealer enchantment which adds an extra soul per level. You can even combine them to make the ultimate weapon for soul
-thievery (vile sword + 5 levels soul steal = 7 per kill).
+To speed up the process there are a couple options available: the soul stealer enchantment, which increases souls
+gained from each kill exponentially per level (i.e. level 3 gives you `2^3 = 8` extra souls per kill), and the cursed
+sword which doubles all souls gained when a mob is killed with it. Additionally, the cursed sword has a much higher
+affinity for the soul stealer enchantment, and is more than 10x more likely roll it when enchanting.
 
 ### Spawning mobs
 
@@ -60,10 +61,14 @@ mod [Soul Shards](http://www.minecraftforum.net/forums/mapping-and-modding/minec
 I forked Respawn because it was not updated past 1.15 and the repository has been archived. I ported the 1.15 fabric
 version to the mojang mappings and 1.19 (also adding back in features from 1.12.2 that were removed in the 1.15 version)
 
-### Differences from Respawn (since 1.x.4)
+## Thanks and credits
 
-- Vile dust crafting
-- Vile sword crafting
-- Hallowed and cursed flames
-- Quartz and Steel
+Some of the art in this mod was done by the wonderful [divisibledeer](https://modrinth.com/user/divisibledeer),
+specifically:
+
+- Corrupted essence sprite
+- Vile sword frame sprite
+- Cursed sword sprite
+- Hammer and quartz sprite
+- Corrupted ingot sprite
 

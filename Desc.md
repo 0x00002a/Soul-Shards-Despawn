@@ -1,6 +1,6 @@
 # Soul Shards Despawn
 
-![](https://github.com/0x00002a/Soul-Shards-Despawn/blob/b84d3609e99c6f5fc41979b8236c22450000b994/images/soul-shards-banner.png)
+![](https://raw.githubusercontent.com/0x00002a/Soul-Shards-Despawn/refs/heads/1.21.1/images/soul-shards-banner.png)
 
 Adds balanced & configurable spawners for any mob, modded or vanilla!
 
@@ -16,7 +16,7 @@ This mod requires getting to the nether before it can be started.
 
 To get started with this mod you will need to create a soul shard. You will need a diamond and a multiblock of the form:
 
-![JEI crafting screen](https://github.com/0x00002a/Soul-Shards-Despawn/blob/b84d3609e99c6f5fc41979b8236c22450000b994/images/soul-shards-jei.png)
+![JEI crafting screen](https://raw.githubusercontent.com/0x00002a/Soul-Shards-Despawn/refs/heads/1.21.1/images/soul-shards-jei.png)
 
 Once you have placed these blocks simply right-click the glowstone with the diamond in your hand.
 
@@ -27,14 +27,14 @@ hotbar when killing mobs. The first mob you kill will bind the shard to that mob
 count kills of that type. You can craft it on its own to remove the binding (and kills).
 
 There are 5 tiers of soul shard by default:
-| Tier | Kills | Doesn't need nearby player | Ignores light level | Controllable via redstone | Spawn interval (
-seconds) | Spawn amount |
-| ---- | ----- | ---------------------- | ---------------------------- | ---------------------------- | ------------------------ | -------- |
-| 1 | 64 | ❌ | ❌ | ❌ | 20 | 2 |
-| 2 | 128 | ❌ | ❌ | ❌ | 10 | 4 |
-| 3 | 256 |✔️| ❌ | ❌ | 5 | 4 |
-| 4 | 512 |✔️|✔️| ❌ | 5 | 4 |
-| 5 | 1024 |✔️|✔️|✔️| 2 | 6 |
+
+| Tier | Kills | Doesn't need nearby player | Ignores light level | Controllable via redstone | Spawn interval (seconds) | Spawn amount |
+|------|-------|----------------------------|---------------------|---------------------------|--------------------------|--------------|
+| 1    | 64    | ❌                          | ❌                   | ❌                         | 20                       | 2            |
+| 2    | 128   | ❌                          | ❌                   | ❌                         | 10                       | 4            |
+| 3    | 256   | ✔️                         | ❌                   | ❌                         | 5                        | 4            |
+| 4    | 512   | ✔️                         | ✔️                  | ❌                         | 5                        | 4            |
+| 5    | 1024  | ✔️                         | ✔️                  | ✔️                        | 2                        | 6            |
 
 To speed up the process there are a couple options available: the soul stealer enchantment, which increases souls
 gained from each kill exponentially per level (i.e. level 3 gives you `2^3 = 8` extra souls per kill), and the cursed
